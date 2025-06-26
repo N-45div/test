@@ -12,6 +12,8 @@ import { useLocation, useNavigate } from "react-router";
 import { CrispChat } from "../bot/knowledge";
 import { useScore } from "../context/ScoreContext";
 import parse from "html-react-parser";
+import Shepherd from "shepherd.js";
+import "shepherd.js/dist/css/shepherd.css";
 
 // Define icon type for clarity
 interface Icon {
@@ -145,6 +147,156 @@ const LevelTwoPart_Two = () => {
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, []);
+
+  // Shepherd.js tour implementation
+  useEffect(() => {
+    const tour = new Shepherd.Tour({
+      defaultStepOptions: {
+        cancelIcon: { enabled: true },
+        classes: "shadow-md bg-purple-dark",
+        scrollTo: { behavior: "smooth", block: "center" },
+      },
+      useModalOverlay: true,
+      confirmCancel: false,
+      tourName: `level-two-part-two-${Date.now()}`,
+    });
+
+    // Dynamic tour steps based on selectedPart
+    if (selectedPart === 1) {
+      tour.addStep({
+        id: "welcome-level-1",
+        text: `
+          <div class="welcome-message">
+            <strong class="welcome-title">🚀 Welcome to Level 1: Automate Placeholders!</strong>
+            <p class="welcome-text">Learn to identify and automate placeholders in employment agreements.</p>
+            <p class="mission-text"><strong>Your mission:</strong> Find placeholders wrapped in [square brackets] and use the Edit Placeholder button to automate them!</p>
+          </div>
+        `,
+        attachTo: { element: document.body, on: "bottom-start" },
+        classes: "shepherd-theme-custom animate__animated animate__fadeIn",
+        buttons: [{ text: "Start Learning →", action: tour.next }],
+      });
+
+      tour.addStep({
+        id: "placeholders-explanation",
+        text: "Look for text wrapped in <strong>[square brackets]</strong> like <strong>[Employer Name]</strong>. These are placeholders that can be automated. Select them and click the 'Edit Placeholder' button!",
+        attachTo: { element: document.body, on: "bottom-start" },
+        buttons: [{ text: "Next →", action: tour.next }],
+      });
+
+      tour.addStep({
+        id: "edit-placeholder-button",
+        text: "This is your <strong>Edit Placeholder</strong> button. After selecting a placeholder, click here to automate it!",
+        attachTo: { element: "#edit-placeholder", on: "bottom" },
+        buttons: [{ text: "Got it!", action: tour.complete }],
+      });
+    } else if (selectedPart === 2) {
+      tour.addStep({
+        id: "welcome-level-2",
+        text: `
+          <div class="welcome-message">
+            <strong class="welcome-title">🎯 Welcome to Level 2: Automate Small Conditions!</strong>
+            <p class="welcome-text">Now you'll learn to identify and automate small conditional clauses.</p>
+            <p class="mission-text"><strong>Your mission:</strong> Find text wrapped in {curly braces} and use the Small Condition button to automate them!</p>
+          </div>
+        `,
+        attachTo: { element: document.body, on: "bottom-start" },
+        classes: "shepherd-theme-custom animate__animated animate__fadeIn",
+        buttons: [{ text: "Start Learning →", action: tour.next }],
+      });
+
+      tour.addStep({
+        id: "small-conditions-explanation",
+        text: "Look for conditional text wrapped in <strong>{curly braces}</strong>. These are small conditions that can be automated based on user choices. Select them and click the 'Small Condition' button!",
+        attachTo: { element: document.body, on: "bottom-start" },
+        buttons: [{ text: "Next →", action: tour.next }],
+      });
+
+      tour.addStep({
+        id: "small-condition-button",
+        text: "This is your <strong>Small Condition</strong> button. Use it after selecting text in {curly braces}!",
+        attachTo: { element: "#icon-small-condition", on: "bottom" },
+        buttons: [{ text: "Got it!", action: tour.complete }],
+      });
+    } else if (selectedPart === 3) {
+      tour.addStep({
+        id: "welcome-level-3",
+        text: `
+          <div class="welcome-message">
+            <strong class="welcome-title">🏆 Welcome to Level 3: Automate Big Conditions!</strong>
+            <p class="welcome-text">Master the automation of large conditional sections.</p>
+            <p class="mission-text"><strong>Your mission:</strong> Find large sections with (parentheses) and use the Big Condition button to automate entire clauses!</p>
+          </div>
+        `,
+        attachTo: { element: document.body, on: "bottom-start" },
+        classes: "shepherd-theme-custom animate__animated animate__fadeIn",
+        buttons: [{ text: "Start Learning →", action: tour.next }],
+      });
+
+      tour.addStep({
+        id: "big-conditions-explanation",
+        text: "Look for large sections that start with <strong>(parentheses)</strong> like entire clauses. These are big conditions that can be made optional. Select them and click the 'Big Condition' button!",
+        attachTo: { element: document.body, on: "bottom-start" },
+        buttons: [{ text: "Next →", action: tour.next }],
+      });
+
+      tour.addStep({
+        id: "big-condition-button",
+        text: "This is your <strong>Big Condition</strong> button. Use it to automate large conditional sections!",
+        attachTo: { element: "#icon-big-condition", on: "bottom" },
+        buttons: [{ text: "Got it!", action: tour.complete }],
+      });
+    }
+
+    tour.addStep({
+      id: "scoring-system",
+      text: "See your score in the top-left corner! You get <strong>+3 points</strong> for correct selections and <strong>-2 points</strong> for incorrect ones. Choose wisely!",
+      attachTo: { element: ".fixed.top-16.left-6", on: "right" },
+      buttons: [{ text: "Ready to play!", action: tour.complete }],
+    });
+
+    // Start the tour
+    tour.start();
+    window.history.replaceState({}, document.title, location.pathname);
+
+    return () => {
+      tour.complete();
+    };
+  }, [selectedPart]);
+
+  // Add tour styles
+  useEffect(() => {
+    const tourStyles = `
+      .welcome-message {
+        padding: 1rem;
+      }
+      .welcome-title {
+        display: block;
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+        color: #2563eb;
+      }
+      .welcome-text {
+        margin-bottom: 0.5rem;
+        color: #374151;
+      }
+      .mission-text {
+        color: #059669;
+        font-size: 0.95rem;
+      }
+      .shepherd-theme-custom {
+        max-width: 400px;
+      }
+    `;
+
+    const styleElement = document.createElement('style');
+    styleElement.textContent = tourStyles;
+    document.head.appendChild(styleElement);
+    
+    return () => {
+      document.head.removeChild(styleElement);
     };
   }, []);
 
@@ -348,7 +500,7 @@ const LevelTwoPart_Two = () => {
       }
 
       const probationClause =
-        "The first Probation Period Length of employment will be a probationary period. The Company shall assess the Employee’s performance and suitability during this time. Upon successful completion, the Employee will be confirmed in their role.";
+        "The first Probation Period Length of employment will be a probationary period. The Company shall assess the Employee's performance and suitability during this time. Upon successful completion, the Employee will be confirmed in their role.";
       if (clauseContent === probationClause && !highlightedTexts.includes("Probation Period Length")) {
         addHighlightedText("Probation Period Length");
         console.log("Added follow-up question: Probation Period Length");
@@ -621,6 +773,3 @@ const LevelTwoPart_Two = () => {
 };
 
 export default LevelTwoPart_Two;
-
-
-// latest code
