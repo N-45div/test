@@ -4,7 +4,7 @@ import { useState, useContext, useRef, useEffect, JSX } from "react";
 import Navbar from "../components/Navbar";
 import { useHighlightedText } from "../context/HighlightedTextContext";
 import { useQuestionType } from "../context/QuestionTypeContext";
-import EmploymentAgreement, { documentText } from "../utils/EmploymentAgreement";
+import EmploymentAgreement from "../utils/EmploymentAgreement";
 import { determineQuestionType } from "../utils/questionTypeUtils";
 import { ThemeContext } from "../context/ThemeContext";
 import AIAnalysisPanel from "../components/AIAnalysisPanel";
@@ -71,10 +71,7 @@ const LevelTwoPart_Two = () => {
   };
 
   const selectedPart = parseInt(localStorage.getItem("selectedPart") || "0", 10);
-  const documentContent =
-    selectedPart === 1
-      ? parse(processDocumentTextForPart1(documentText))
-      : <EmploymentAgreement />;
+  const documentContent = <EmploymentAgreement />;
 
   // Log document content for debugging
   useEffect(() => {
@@ -150,121 +147,232 @@ const LevelTwoPart_Two = () => {
     };
   }, []);
 
-  // Shepherd.js tour implementation
   useEffect(() => {
-    const tour = new Shepherd.Tour({
-      defaultStepOptions: {
-        cancelIcon: { enabled: true },
-        classes: "shadow-md bg-purple-dark",
-        scrollTo: { behavior: "smooth", block: "center" },
-      },
-      useModalOverlay: true,
-      confirmCancel: false,
-      tourName: `level-two-part-two-${Date.now()}`,
-    });
+    let tour; // hold the tour instance for cleanup
 
-    // Dynamic tour steps based on selectedPart
     if (selectedPart === 1) {
+      tour = new Shepherd.Tour({
+        defaultStepOptions: { cancelIcon: { enabled: true }, classes: "shadow-md bg-purple-dark", scrollTo: { behavior: "smooth", block: "center" } },
+        useModalOverlay: true,
+      });
+
       tour.addStep({
         id: "welcome-level-1",
         text: `
           <div class="welcome-message">
-            <strong class="welcome-title">🚀 Welcome to Level 1: Automate Placeholders!</strong>
-            <p class="welcome-text">Learn to identify and automate placeholders in employment agreements.</p>
-            <p class="mission-text"><strong>Your mission:</strong> Find placeholders wrapped in [square brackets] and use the Edit Placeholder button to automate them!</p>
+            <strong>🚀 Welcome to Level 1: Automate Placeholders!</strong>
+            <p>Learn to identify and automate placeholders in employment agreements.</p>
+            <p><strong>Your mission:</strong> Find placeholders wrapped in [square brackets] and use the Edit Placeholder button to automate them!</p>
           </div>
         `,
         attachTo: { element: document.body, on: "bottom-start" },
-        classes: "shepherd-theme-custom animate__animated animate__fadeIn",
         buttons: [{ text: "Start Learning →", action: tour.next }],
       });
-
       tour.addStep({
         id: "placeholders-explanation",
-        text: "Look for text wrapped in <strong>[square brackets]</strong> like <strong>[Employer Name]</strong>. These are placeholders that can be automated. Select them and click the 'Edit Placeholder' button!",
+        text: "Look for text wrapped in <strong>[square brackets]</strong> like <strong>[Employer Name]</strong>. Select them and click the 'Edit Placeholder' button!",
         attachTo: { element: document.body, on: "bottom-start" },
         buttons: [{ text: "Next →", action: tour.next }],
       });
-
       tour.addStep({
         id: "edit-placeholder-button",
-        text: "This is your <strong>Edit Placeholder</strong> button. After selecting a placeholder, click here to automate it!",
+        text: "This is your <strong>Edit Placeholder</strong> button. Click it after selecting a placeholder!",
         attachTo: { element: "#edit-placeholder", on: "bottom" },
-        buttons: [{ text: "Got it!", action: tour.complete }],
-      });
-    } else if (selectedPart === 2) {
-      tour.addStep({
-        id: "welcome-level-2",
-        text: `
-          <div class="welcome-message">
-            <strong class="welcome-title">🎯 Welcome to Level 2: Automate Small Conditions!</strong>
-            <p class="welcome-text">Now you'll learn to identify and automate small conditional clauses.</p>
-            <p class="mission-text"><strong>Your mission:</strong> Find text wrapped in {curly braces} and use the Small Condition button to automate them!</p>
-          </div>
-        `,
-        attachTo: { element: document.body, on: "bottom-start" },
-        classes: "shepherd-theme-custom animate__animated animate__fadeIn",
-        buttons: [{ text: "Start Learning →", action: tour.next }],
-      });
-
-      tour.addStep({
-        id: "small-conditions-explanation",
-        text: "Look for conditional text wrapped in <strong>{curly braces}</strong>. These are small conditions that can be automated based on user choices. Select them and click the 'Small Condition' button!",
-        attachTo: { element: document.body, on: "bottom-start" },
-        buttons: [{ text: "Next →", action: tour.next }],
-      });
-
-      tour.addStep({
-        id: "small-condition-button",
-        text: "This is your <strong>Small Condition</strong> button. Use it after selecting text in {curly braces}!",
-        attachTo: { element: "#icon-small-condition", on: "bottom" },
-        buttons: [{ text: "Got it!", action: tour.complete }],
-      });
-    } else if (selectedPart === 3) {
-      tour.addStep({
-        id: "welcome-level-3",
-        text: `
-          <div class="welcome-message">
-            <strong class="welcome-title">🏆 Welcome to Level 3: Automate Big Conditions!</strong>
-            <p class="welcome-text">Master the automation of large conditional sections.</p>
-            <p class="mission-text"><strong>Your mission:</strong> Find large sections with (parentheses) and use the Big Condition button to automate entire clauses!</p>
-          </div>
-        `,
-        attachTo: { element: document.body, on: "bottom-start" },
-        classes: "shepherd-theme-custom animate__animated animate__fadeIn",
-        buttons: [{ text: "Start Learning →", action: tour.next }],
-      });
-
-      tour.addStep({
-        id: "big-conditions-explanation",
-        text: "Look for large sections that start with <strong>(parentheses)</strong> like entire clauses. These are big conditions that can be made optional. Select them and click the 'Big Condition' button!",
-        attachTo: { element: document.body, on: "bottom-start" },
-        buttons: [{ text: "Next →", action: tour.next }],
-      });
-
-      tour.addStep({
-        id: "big-condition-button",
-        text: "This is your <strong>Big Condition</strong> button. Use it to automate large conditional sections!",
-        attachTo: { element: "#icon-big-condition", on: "bottom" },
         buttons: [{ text: "Got it!", action: tour.complete }],
       });
     }
 
-    tour.addStep({
-      id: "scoring-system",
-      text: "See your score in the top-left corner! You get <strong>+3 points</strong> for correct selections and <strong>-2 points</strong> for incorrect ones. Choose wisely!",
-      attachTo: { element: ".fixed.top-16.left-6", on: "right" },
-      buttons: [{ text: "Ready to play!", action: tour.complete }],
-    });
+    else if (selectedPart === 2) {
+      tour = new Shepherd.Tour({
+        defaultStepOptions: { cancelIcon: { enabled: true }, classes: "shadow-md bg-purple-dark", scrollTo: { behavior: "smooth", block: "center" } },
+        useModalOverlay: true,
+      });
 
-    // Start the tour
-    tour.start();
-    window.history.replaceState({}, document.title, location.pathname);
+      tour.addStep({
+        id: "intro-sub-level-2",
+        text: `
+          <div class="welcome-message">
+            <strong>🎉 Welcome to Sub Level 2!</strong>
+            <p>You've conquered placeholders—now it's time to master <strong>Small Conditions</strong>.</p>
+            <p>Your mission: Automate the overtime pay clause using curly braces <code>{ }</code>. Let's unlock this power!</p>
+          </div>
+        `,
+        attachTo: { element: document.body, on: "center" },
+        buttons: [{ text: "Let's go!", action: tour.next }],
+      });
+
+      tour.addStep({
+        id: "identify-small-conditions",
+        text: `
+          <p>Look at the <strong>JOB TITLE AND DUTIES</strong> section.</p>
+          <p>See text wrapped in curly braces like:</p>
+          <blockquote>{The Employee may be required to perform additional duties as reasonably assigned by the Company}</blockquote>
+          <p>These are <strong>Small Conditions</strong> that dynamically appear or disappear.</p>
+        `,
+        attachTo: { element: "#job-title-and-duties", on: "top" },
+        buttons: [{ text: "Next", action: tour.next }],
+      });
+
+      tour.addStep({
+        id: "select-create-small-condition",
+        text: `
+          <p><strong>Action time!</strong> Highlight the entire overtime pay clause wrapped in curly braces.</p>
+          <p>Now click the <strong>‘Condition’</strong> button to automate it. 🎯</p>
+        `,
+        attachTo: { element: "#icon-small-condition", on: "bottom" },
+        buttons: [{ text: "Done", action: tour.next }],
+      });
+
+      tour.addStep({
+        id: "navigate-to-questionnaire",
+        text: `
+          <p>Time to power up this condition!</p>
+          <p>Click <strong>'Questionnaire'</strong> in the menu bar to set up when this clause appears.</p>
+        `,
+        attachTo: { element: ".menu-bar-questionnaire", on: "bottom" },
+        buttons: [
+          {
+            text: "Go now →",
+            action: () => {
+              tour.complete();
+              navigate("/Questionnaire");
+            },
+          },
+        ],
+      });
+
+      tour.addStep({
+        id: "configure-small-condition-question",
+        text: `
+          <p>Welcome to the <strong>Small Conditions</strong> section.</p>
+          <p>See the default question:</p>
+          <blockquote>Is the Employee required to perform additional duties as part of their employment?</blockquote>
+          <p>This is a <strong>Yes/No Radio</strong> button that controls whether the clause appears in the document.</p>
+          <ul>
+            <li>✅ <strong>Yes</strong> → Clause appears</li>
+            <li>🚫 <strong>No</strong> → Clause disappears</li>
+          </ul>
+        `,
+        attachTo: { element: ".questionnaire-small-conditions", on: "top" },
+        buttons: [{ text: "Next", action: tour.next }],
+      });
+
+      tour.addStep({
+        id: "test-small-condition",
+        text: `
+          <p>Go to the <strong>'Live Preview'</strong> tab. Select <strong>Yes</strong> to see the clause appear. Select <strong>No</strong> and watch it vanish!</p>
+          <p>🎉 You've created dynamic content that adapts to user choices!</p>
+        `,
+        attachTo: { element: ".live-preview-section", on: "top" },
+        buttons: [{ text: "Finish Tour", action: tour.complete }],
+      });
+    }
+
+    else if (selectedPart === 3) {
+      tour = new Shepherd.Tour({
+        defaultStepOptions: { cancelIcon: { enabled: true }, classes: "shadow-md bg-purple-dark", scrollTo: { behavior: "smooth", block: "center" }},
+        useModalOverlay: true,
+      });
+    
+      tour.addStep({
+        id: "intro-sub-level-3",
+        text: `
+          <div class="welcome-message">
+            <strong>🎯 Welcome to Sub Level 3!</strong>
+            <p>Excellent work conquering Small Conditions. Now it's time to master <strong>Big Conditions</strong>—the powerhouse of automation!</p>
+            <p>Your mission: Automate the probationary period clause using round brackets <code>( )</code>. Ready to unlock advanced logic?</p>
+          </div>
+        `,
+        attachTo: { element: document.body, on: "center" },
+        buttons: [{ text: "Let's go!", action: tour.next }],
+      });
+    
+      tour.addStep({
+        id: "identify-big-conditions",
+        text: `
+          <p>Look at the <strong>PROBATIONARY PERIOD</strong> section near the top.</p>
+          <p>See the paragraph wrapped in round brackets like:</p>
+          <blockquote>(The first [Probation Period Length] months of employment...)</blockquote>
+          <p>These are <strong>Big Conditions</strong> that can include or exclude entire clauses, making your document truly adaptive.</p>
+        `,
+        attachTo: { element: "#probationary-period-clause", on: "top" },
+        buttons: [{ text: "Next", action: tour.next }],
+      });
+    
+      tour.addStep({
+        id: "select-create-big-condition",
+        text: `
+          <p><strong>Action time!</strong> Highlight the entire probationary period clause wrapped in round brackets.</p>
+          <p>Then click the <strong>'Big Condition'</strong> button to automate it. Outstanding!</p>
+        `,
+        attachTo: { element: "#icon-big-condition", on: "bottom" },
+        buttons: [{ text: "Done", action: tour.next }],
+      });
+    
+      tour.addStep({
+        id: "navigate-to-questionnaire-big",
+        text: `
+          <p>Time to bring this Big Condition to life!</p>
+          <p>Click <strong>'Questionnaire'</strong> in the menu bar. This is where you'll create the controlling <strong>Yes/No</strong> question.</p>
+        `,
+        attachTo: { element: ".menu-bar-questionnaire", on: "bottom" },
+        buttons: [
+          {
+            text: "Go now →",
+            action: () => {
+              tour.complete();
+              navigate("/Questionnaire");
+            },
+          },
+        ],
+      });
+    
+      tour.addStep({
+        id: "configure-big-condition-question",
+        text: `
+          <p>Welcome to the <strong>Big Conditions</strong> section in the Questionnaire.</p>
+          <p>See the default question:</p>
+          <blockquote>Should a probationary period apply to this employment contract?</blockquote>
+          <ul>
+            <li>✅ <strong>Yes</strong> → The entire probationary clause (and its placeholders) appear.</li>
+            <li>🚫 <strong>No</strong> → The section disappears, streamlining the contract.</li>
+          </ul>
+          <p>By default, big conditions stay hidden unless selected. Notice how this also reveals additional placeholders when 'Yes' is chosen!</p>
+        `,
+        attachTo: { element: ".questionnaire-big-conditions", on: "top" },
+        buttons: [{ text: "Next", action: tour.next }],
+      });
+    
+      tour.addStep({
+        id: "test-big-condition",
+        text: `
+          <p>Let's see it in action!</p>
+          <p>Switch to the <strong>'Live Preview'</strong> tab. Select <strong>Yes</strong> and watch the probationary section appear along with [Probation Period Length].</p>
+          <p>Select <strong>No</strong> and see it vanish. 🎉 You've mastered advanced conditional document structures!</p>
+        `,
+        attachTo: { element: ".live-preview-section", on: "top" },
+        buttons: [{ text: "Finish Tour", action: tour.complete }],
+      });
+    }
+    
+
+    // Universal scoring step
+    if (tour) {
+      tour.addStep({
+        id: "scoring-system",
+        text: "See your score in the top-left corner! You get <strong>+3 points</strong> for correct selections and <strong>-2 points</strong> for incorrect ones. Choose wisely!",
+        attachTo: { element: ".fixed.top-16.left-6", on: "right" },
+        buttons: [{ text: "Ready to play!", action: tour.complete }],
+      });
+
+      tour.start();
+    }
 
     return () => {
-      tour.complete();
+      if (tour) tour.complete();
     };
-  }, [selectedPart]);
+  }, [selectedPart, navigate]);
+
 
   // Add tour styles
   useEffect(() => {
@@ -294,7 +402,7 @@ const LevelTwoPart_Two = () => {
     const styleElement = document.createElement('style');
     styleElement.textContent = tourStyles;
     document.head.appendChild(styleElement);
-    
+
     return () => {
       document.head.removeChild(styleElement);
     };
@@ -555,11 +663,10 @@ const LevelTwoPart_Two = () => {
 
   return (
     <div
-      className={`w-full min-h-screen font-sans transition-all duration-500 ${
-        isDarkMode
-          ? "bg-gradient-to-br from-gray-800 via-gray-900 to-black"
-          : "bg-gradient-to-br from-indigo-50 via-teal-50 to-pink-50"
-      }`}
+      className={`w-full min-h-screen font-sans transition-all duration-500 ${isDarkMode
+        ? "bg-gradient-to-br from-gray-800 via-gray-900 to-black"
+        : "bg-gradient-to-br from-indigo-50 via-teal-50 to-pink-50"
+        }`}
     >
       <Navbar
         level="/LevelTwoPart_Two"
@@ -569,27 +676,24 @@ const LevelTwoPart_Two = () => {
       <div className="text-center mt-24">
         {selectedPart === 1 && (
           <h1
-            className={`text-3xl font-bold tracking-wide ${
-              isDarkMode ? "text-white" : "text-gray-700"
-            }`}
+            className={`text-3xl font-bold tracking-wide ${isDarkMode ? "text-white" : "text-gray-700"
+              }`}
           >
             LEVEL 1: Automate Placeholders
           </h1>
         )}
         {selectedPart === 2 && (
           <h1
-            className={`text-3xl font-bold tracking-wide ${
-              isDarkMode ? "text-white" : "text-gray-700"
-            }`}
+            className={`text-3xl font-bold tracking-wide ${isDarkMode ? "text-white" : "text-gray-700"
+              }`}
           >
             LEVEL 2: Automate Small Conditions
           </h1>
         )}
         {selectedPart === 3 && (
           <h1
-            className={`text-3xl font-bold tracking-wide ${
-              isDarkMode ? "text-white" : "text-gray-700"
-            }`}
+            className={`text-3xl font-bold tracking-wide ${isDarkMode ? "text-white" : "text-gray-700"
+              }`}
           >
             LEVEL 3: Automate Big Conditions
           </h1>
@@ -597,16 +701,14 @@ const LevelTwoPart_Two = () => {
       </div>
       <div className="fixed top-16 left-6 z-50 px-6 py-3">
         <div
-          className={`p-3 rounded-full shadow-lg flex items-center ${
-            isDarkMode ? "bg-gray-700 text-white" : "bg-teal-500 text-white"
-          }`}
+          className={`p-3 rounded-full shadow-lg flex items-center ${isDarkMode ? "bg-gray-700 text-white" : "bg-teal-500 text-white"
+            }`}
         >
           <span className="font-bold mr-2">Score:</span> {totalScore}
           {scoreChange !== null && (
             <span
-              className={`ml-2 text-sm font-bold ${
-                scoreChange > 0 ? "text-green-400" : "text-red-400"
-              }`}
+              className={`ml-2 text-sm font-bold ${scoreChange > 0 ? "text-green-400" : "text-red-400"
+                }`}
             >
               {scoreChange > 0 ? `+${scoreChange}` : scoreChange}
             </span>
@@ -629,11 +731,10 @@ const LevelTwoPart_Two = () => {
                     ? "edit-placeholder"
                     : `icon-${label.toLowerCase().replace(" ", "-")}`
                 }
-                className={`p-3 rounded-full shadow-lg transform hover:scale-110 transition-all duration-300 ease-in-out flex items-center justify-center text-2xl ${
-                  isDarkMode
-                    ? "bg-gradient-to-r from-gray-600 to-gray-700 text-white hover:from-gray-700 hover:to-gray-800"
-                    : "bg-gradient-to-r from-teal-400 to-cyan-400 text-white hover:from-teal-500 hover:to-cyan-500"
-                }`}
+                className={`p-3 rounded-full shadow-lg transform hover:scale-110 transition-all duration-300 ease-in-out flex items-center justify-center text-2xl ${isDarkMode
+                  ? "bg-gradient-to-r from-gray-600 to-gray-700 text-white hover:from-gray-700 hover:to-gray-800"
+                  : "bg-gradient-to-r from-teal-400 to-cyan-400 text-white hover:from-teal-500 hover:to-cyan-500"
+                  }`}
                 onMouseEnter={() => setTooltip(label)}
                 onMouseLeave={() => setTooltip(null)}
                 onClick={() => handleIconClick(label)}
@@ -642,11 +743,10 @@ const LevelTwoPart_Two = () => {
               </button>
               {tooltip === label && (
                 <div
-                  className={`absolute -left top-full mt-2 px-3 py-1 text-sm font-medium text-white rounded-lg shadow-lg whitespace-nowrap ${
-                    isDarkMode
-                      ? "bg-gradient-to-r from-gray-700 to-gray-800"
-                      : "bg-gradient-to-r from-gray-800 to-gray-900"
-                  }`}
+                  className={`absolute -left top-full mt-2 px-3 py-1 text-sm font-medium text-white rounded-lg shadow-lg whitespace-nowrap ${isDarkMode
+                    ? "bg-gradient-to-r from-gray-700 to-gray-800"
+                    : "bg-gradient-to-r from-gray-800 to-gray-900"
+                    }`}
                 >
                   {label}
                 </div>
@@ -656,26 +756,23 @@ const LevelTwoPart_Two = () => {
         })}
       </div>
       <div
-        className={`max-w-5xl mx-auto p-8 rounded-3xl shadow-2xl border mt-24 transform transition-all duration-500 hover:shadow-3xl ${
-          isDarkMode
-            ? "bg-gray-800/90 backdrop-blur-lg border-gray-700/50"
-            : "bg-white/90 backdrop-blur-lg border-teal-100/30"
-        }`}
+        className={`max-w-5xl mx-auto p-8 rounded-3xl shadow-2xl border mt-24 transform transition-all duration-500 hover:shadow-3xl ${isDarkMode
+          ? "bg-gray-800/90 backdrop-blur-lg border-gray-700/50"
+          : "bg-white/90 backdrop-blur-lg border-teal-100/30"
+          }`}
       >
         <h2
-          className={`text-2xl font-semibold mb-6 tracking-wide ${
-            isDarkMode ? "text-teal-300" : "text-teal-700"
-          }`}
+          className={`text-2xl font-semibold mb-6 tracking-wide ${isDarkMode ? "text-teal-300" : "text-teal-700"
+            }`}
         >
           ☑️ Selected Placeholders
         </h2>
         {highlightedTexts.length > 0 ? (
           <ul
-            className={`space-y-3 p-5 rounded-xl shadow-inner ${
-              isDarkMode
-                ? "bg-gradient-to-r from-gray-700/70 via-gray-800/70 to-gray-900/70"
-                : "bg-gradient-to-r from-teal-50/70 via-cyan-50/70 to-indigo-50/70"
-            }`}
+            className={`space-y-3 p-5 rounded-xl shadow-inner ${isDarkMode
+              ? "bg-gradient-to-r from-gray-700/70 via-gray-800/70 to-gray-900/70"
+              : "bg-gradient-to-r from-teal-50/70 via-cyan-50/70 to-indigo-50/70"
+              }`}
           >
             {[...new Set(highlightedTexts)].map((text, index) => {
               const { primaryValue } = determineQuestionType(text);
@@ -686,19 +783,17 @@ const LevelTwoPart_Two = () => {
                 <li key={index} className="flex items-center justify-between">
                   <div>
                     <span
-                      className={`text-sm font-medium truncate max-w-xs ${
-                        isDarkMode ? "text-teal-200" : "text-teal-900"
-                      }`}
+                      className={`text-sm font-medium truncate max-w-xs ${isDarkMode ? "text-teal-200" : "text-teal-900"
+                        }`}
                     >
                       {displayText}
                     </span>
                   </div>
                   <span
-                    className={`text-xs px-2 py-1 rounded-full ${
-                      isDarkMode
-                        ? "text-gray-300 bg-gray-500/50"
-                        : "text-gray-600 bg-teal-100/50"
-                    }`}
+                    className={`text-xs px-2 py-1 rounded-full ${isDarkMode
+                      ? "text-gray-300 bg-gray-500/50"
+                      : "text-gray-600 bg-teal-100/50"
+                      }`}
                   >
                     Type: {questionType}
                   </span>
@@ -708,16 +803,14 @@ const LevelTwoPart_Two = () => {
           </ul>
         ) : (
           <div
-            className={`text-center py-8 rounded-xl shadow-inner ${
-              isDarkMode
-                ? "bg-gradient-to-r from-gray-700/70 via-gray-800/70 to-gray-900/70"
-                : "bg-gradient-to-r from-teal-50/70 via-cyan-50/70 to-indigo-50/70"
-            }`}
+            className={`text-center py-8 rounded-xl shadow-inner ${isDarkMode
+              ? "bg-gradient-to-r from-gray-700/70 via-gray-800/70 to-gray-900/70"
+              : "bg-gradient-to-r from-teal-50/70 via-cyan-50/70 to-indigo-50/70"
+              }`}
           >
             <p
-              className={`italic text-lg ${
-                isDarkMode ? "text-teal-400" : "text-teal-600"
-              }`}
+              className={`italic text-lg ${isDarkMode ? "text-teal-400" : "text-teal-600"
+                }`}
             >
               No placeholders selected yet
             </p>
@@ -726,11 +819,10 @@ const LevelTwoPart_Two = () => {
         {highlightedTexts.length > 0 && (
           <div className="mt-5 text-right">
             <span
-              className={`text-sm px-3 py-1 rounded-full ${
-                isDarkMode
-                  ? "text-teal-300 bg-gray-600/50"
-                  : "text-teal-600 bg-teal-200/50"
-              }`}
+              className={`text-sm px-3 py-1 rounded-full ${isDarkMode
+                ? "text-teal-300 bg-gray-600/50"
+                : "text-teal-600 bg-teal-200/50"
+                }`}
             >
               Total Placeholders: {[...new Set(highlightedTexts)].length}
             </span>
@@ -739,11 +831,10 @@ const LevelTwoPart_Two = () => {
       </div>
       <div className="max-w-5xl mx-auto mt-10 px-8 pb-20" ref={documentRef}>
         <div
-          className={`p-6 rounded-xl shadow-xl border ${
-            isDarkMode
-              ? "bg-gray-800/70 backdrop-blur-md border-gray-900/20 bg-gradient-to-br from-gray-700/70 via-gray-800/70 to-gray-900/70"
-              : "bg-white/80 backdrop-blur-md border-gray-100/20 bg-gradient-to-br from-teal-50/50 via-cyan-50/50 to-indigo-50/50"
-          }`}
+          className={`p-6 rounded-xl shadow-xl border ${isDarkMode
+            ? "bg-gray-800/70 backdrop-blur-md border-gray-900/20 bg-gradient-to-br from-gray-700/70 via-gray-800/70 to-gray-900/70"
+            : "bg-white/80 backdrop-blur-md border-gray-100/20 bg-gradient-to-br from-teal-50/50 via-cyan-50/50 to-indigo-50/50"
+            }`}
         >
           {documentContent}
         </div>
@@ -758,11 +849,10 @@ const LevelTwoPart_Two = () => {
         <div className="flex gap-2">
           <button
             onClick={() => navigate(-1)}
-            className={`px-4 py-2 rounded-lg font-medium shadow-md transition-all duration-200 ${
-              isDarkMode
-                ? "bg-gray-700 text-gray-100 hover:bg-gray-600"
-                : "bg-teal-200 text-teal-900 hover:bg-teal-300"
-            }`}
+            className={`px-4 py-2 rounded-lg font-medium shadow-md transition-all duration-200 ${isDarkMode
+              ? "bg-gray-700 text-gray-100 hover:bg-gray-600"
+              : "bg-teal-200 text-teal-900 hover:bg-teal-300"
+              }`}
           >
             Back
           </button>
