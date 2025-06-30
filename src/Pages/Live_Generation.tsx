@@ -10,7 +10,6 @@ import { useUserAnswers } from "../context/UserAnswersContext";
 import parse, { DOMNode, Element } from "html-react-parser";
 import PerformanceStar_SubLevel_1Game from "../components/PerformanceStar_SubLevel_1Game";
 import CodeCircuit_SubLevel_3Game from "../components/CodeCircuit_SubLevel_3Game";
-import SmallCondition_SubLevel_2Game from "../components/SmallCondition_SubLevel_2Game";
 import { useScore } from "../context/ScoreContext";
 
 interface QuestionnaireState {

@@ -11,7 +11,6 @@ import AIAnalysisPanel from "../components/AIAnalysisPanel";
 import { useLocation, useNavigate } from "react-router";
 import { CrispChat } from "../bot/knowledge";
 import { useScore } from "../context/ScoreContext";
-import parse from "html-react-parser";
 import Shepherd, { Tour } from "shepherd.js";
 import "shepherd.js/dist/css/shepherd.css";
 
@@ -197,7 +196,7 @@ const LevelTwoPart_Two = () => {
             <p>Your mission: Automate the overtime pay clause using curly braces <code>{ }</code>. Let's unlock this power!</p>
           </div>
         `,
-        attachTo: { element: document.body, on: "center" },
+        attachTo: { element: document.body, on: "bottom" },
         buttons: [{ text: "Let's go!", action: tour.next }],
       });
 
@@ -283,7 +282,7 @@ const LevelTwoPart_Two = () => {
             <p>Your mission: Automate the probationary period clause using round brackets <code>( )</code>. Ready to unlock advanced logic?</p>
           </div>
         `,
-        attachTo: { element: document.body, on: "center" },
+        attachTo: { element: document.body, on: "bottom" },
         buttons: [{ text: "Let's go!", action: tour.next }],
       });
     
@@ -353,19 +352,6 @@ const LevelTwoPart_Two = () => {
         attachTo: { element: ".live-preview-section", on: "top" },
         buttons: [{ text: "Finish Tour", action: tour.complete }],
       });
-    }
-    
-
-    // Universal scoring step
-    if (tour) {
-      tour.addStep({
-        id: "scoring-system",
-        text: "See your score in the top-left corner! You get <strong>+3 points</strong> for correct selections and <strong>-2 points</strong> for incorrect ones. Choose wisely!",
-        attachTo: { element: ".fixed.top-16.left-6", on: "right" },
-        buttons: [{ text: "Ready to play!", action: tour.complete }],
-      });
-
-      tour.start();
     }
 
     return () => {
