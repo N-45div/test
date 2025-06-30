@@ -12,7 +12,7 @@ import { useLocation, useNavigate } from "react-router";
 import { CrispChat } from "../bot/knowledge";
 import { useScore } from "../context/ScoreContext";
 import parse from "html-react-parser";
-import Shepherd from "shepherd.js";
+import Shepherd, { Tour } from "shepherd.js";
 import "shepherd.js/dist/css/shepherd.css";
 
 // Define icon type for clarity
@@ -148,7 +148,7 @@ const LevelTwoPart_Two = () => {
   }, []);
 
   useEffect(() => {
-    let tour; // hold the tour instance for cleanup
+    let tour: Tour; // hold the tour instance for cleanup
 
     if (selectedPart === 1) {
       tour = new Shepherd.Tour({
