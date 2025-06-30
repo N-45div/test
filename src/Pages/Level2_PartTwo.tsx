@@ -11,6 +11,7 @@ import AIAnalysisPanel from "../components/AIAnalysisPanel";
 import { useLocation, useNavigate } from "react-router";
 import { CrispChat } from "../bot/knowledge";
 import { useScore } from "../context/ScoreContext";
+import parse from "html-react-parser";
 import Shepherd, { Tour } from "shepherd.js";
 import "shepherd.js/dist/css/shepherd.css";
 
@@ -48,6 +49,8 @@ const LevelTwoPart_Two = () => {
   const [foundPlaceholders, setFoundPlaceholders] = useState<string[]>([]);
   const [foundSmallConditions, setFoundSmallConditions] = useState<string[]>([]);
   const [foundBigConditions, setFoundBigConditions] = useState<string[]>([]);
+
+  
 
   const selectedPart = parseInt(localStorage.getItem("selectedPart") || "0", 10);
   const documentContent = <EmploymentAgreement />;
@@ -125,9 +128,8 @@ const LevelTwoPart_Two = () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, []);
-
+  let tour: Tour; //
   useEffect(() => {
-    let tour: Tour; // hold the tour instance for cleanup
 
     if (selectedPart === 1) {
       tour = new Shepherd.Tour({
@@ -176,7 +178,7 @@ const LevelTwoPart_Two = () => {
             <p>Your mission: Automate the overtime pay clause using curly braces <code>{ }</code>. Let's unlock this power!</p>
           </div>
         `,
-        attachTo: { element: document.body, on: "bottom" },
+        attachTo: { element: document.body, on: "left-end" },
         buttons: [{ text: "Let's go!", action: tour.next }],
       });
 
@@ -262,7 +264,7 @@ const LevelTwoPart_Two = () => {
             <p>Your mission: Automate the probationary period clause using round brackets <code>( )</code>. Ready to unlock advanced logic?</p>
           </div>
         `,
-        attachTo: { element: document.body, on: "bottom" },
+        attachTo: { element: document.body, on: "left-end" },
         buttons: [{ text: "Let's go!", action: tour.next }],
       });
     
@@ -332,6 +334,13 @@ const LevelTwoPart_Two = () => {
         attachTo: { element: ".live-preview-section", on: "top" },
         buttons: [{ text: "Finish Tour", action: tour.complete }],
       });
+    }
+    
+
+    // Universal scoring step
+    if (tour) {
+
+      tour.start();
     }
 
     return () => {
