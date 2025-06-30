@@ -49,26 +49,6 @@ const LevelTwoPart_Two = () => {
   const [foundSmallConditions, setFoundSmallConditions] = useState<string[]>([]);
   const [foundBigConditions, setFoundBigConditions] = useState<string[]>([]);
 
-  const processDocumentTextForPart1 = (html: string): string => {
-    let updatedHtml = html;
-    updatedHtml = updatedHtml.replace(
-      /<h2[^>]*>\(PROBATIONARY PERIOD<\/h2>\s*<p>([\s\S]*?)\)\s*<span[^>]*>\(Optional Clause\)<\/span>/i,
-      (_match, content) => {
-        return `<h2 className="text-2xl font-bold mt-6">(PROBATIONARY PERIOD</h2><p className="mt-5">${content})</p><span className="text-black font-medium">(Optional)</span>`;
-      }
-    );
-    updatedHtml = updatedHtml.replace(
-      /<h2[^>]*>\(PENSION<\/h2>\s*<p>([\s\S]*?)\)/i,
-      (_match, content) => {
-        return `<h2 className="text-2xl font-bold mt-6">(PENSION</h2><p className="mt-2">${content})</p>`;
-      }
-    );
-    // Preserve curly braces for small conditions
-    // Remove only {/ /} placeholders
-    updatedHtml = updatedHtml.replace(/\{\/([\s\S]*?)\/\}/g, (_match, content) => content);
-    return updatedHtml;
-  };
-
   const selectedPart = parseInt(localStorage.getItem("selectedPart") || "0", 10);
   const documentContent = <EmploymentAgreement />;
 
