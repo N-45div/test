@@ -115,35 +115,6 @@ const CodeCircuit_SubLevel_3GamePopup: React.FC<
   );
 };
 
-// Add new interface for SmallCondition_SubLevel_2GamePopup
-interface SmallCondition_SubLevel_2GamePopupProps {
-  isVisible: boolean;
-  isDarkMode: boolean;
-  score: number;
-  onContinue: () => void;
-  onReplay: () => void;
-}
-
-const SmallCondition_SubLevel_2GamePopup: React.FC<SmallCondition_SubLevel_2GamePopupProps> = ({
-  isVisible,
-  isDarkMode,
-  score,
-  onContinue,
-  onReplay,
-}) => {
-  if (!isVisible) return null;
-
-  return (
-    <div className="fixed inset-0 backdrop-blur-sm bg-black/30 flex items-center justify-center z-50">
-      <SmallCondition_SubLevel_2Game
-        score={score}
-        onRetry={onReplay}
-        onContinue={onContinue}
-        isDarkMode={isDarkMode}
-      />
-    </div>
-  );
-};
 
 const Live_Generation = () => {
   const { isDarkMode } = useContext(ThemeContext);
@@ -1770,15 +1741,6 @@ const Live_Generation = () => {
               onContinue={handleContinueToDocument}
               onReplay={handleReplay}
               score={calculatedScore}
-            />
-          )}
-          {selectedPart === "2" && (
-            <SmallCondition_SubLevel_2GamePopup
-              isVisible={showSmallCondition_SubLevel_2GamePopup}
-              isDarkMode={isDarkMode}
-              score={calculatedScore}
-              onContinue={handleFinishSmallCondition_SubLevel_2Game}
-              onReplay={handleReplay}
             />
           )}
           {selectedPart === "3" && (
